@@ -51,7 +51,6 @@ def render():
         | **IRA** | Inflation Reduction Act (2022) — US law allocating ~$370B to clean energy and carbon removal |
         | **45Q** | A US tax credit of up to $180/tonne for geologically stored carbon — major DAC incentive |
         | **Permanence** | How long a carbon removal lasts — DAC removal is considered permanent; forest removal is not |
-        | **Log scale** | A chart scale where each step multiplies by 10 rather than adding — used when values span a wide range |
         """)
 
     st.markdown("<hr class='section-divider'/>", unsafe_allow_html=True)
@@ -127,7 +126,8 @@ def render():
         font=dict(family="DM Sans", size=12, color="#333"),
         xaxis=dict(title="Year", showgrid=False),
         yaxis=dict(title="Cost (USD per tonne CO₂)",
-           showgrid=True, gridcolor="#f0f0f0"),
+           showgrid=True, gridcolor="#f0f0f0",
+           range=[0, 1100]),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
         margin=dict(l=70, r=40, t=60, b=60),
         hovermode="x unified"
