@@ -276,9 +276,9 @@ def render():
 
         # Add IRA annotation if years overlap
         fig2.add_vline(x=2022, line_dash="dot", line_color="#c0392b", line_width=1.5)
-        fig2.add_annotation(x=2022, y=0, text="IRA signed<br>(Aug 2022)",
+        fig2.add_annotation(x=2022, y=0.02, text="IRA signed<br>(Aug 2022)",
                            showarrow=False, font=dict(size=9, color="#c0392b"),
-                           xanchor="left", yanchor="bottom", yref="paper", y=0.02)
+                           xanchor="left", yanchor="bottom", yref="paper")
 
         fig2.update_layout(
             height=400,
