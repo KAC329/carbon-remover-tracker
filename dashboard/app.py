@@ -153,6 +153,10 @@ h3 {
     border: 1px solid #a5d6a7;
 }
 
+[data-testid="collapsedControl"] {
+    display: none !important;
+}
+
 /* Plotly chart container */
 .chart-container {
     border: 1px solid #d4e4d4;
