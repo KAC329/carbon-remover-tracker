@@ -178,17 +178,17 @@ with st.sidebar:
 
 # ── Page Routing ──────────────────────────────────────────────────
 if page == "Home":
-    from dashboard.pages.home import render
+    from pages.home import render
     render()
 elif page == "Compare Technologies":
-    from dashboard.pages.compare import render
+    from pages.compare import render
     render()
 elif page == "ESG vs Reality":
-    from dashboard.pages.esg import render
+    from pages.esg import render
     render()
 elif page == "Forecasts":
-    from dashboard.pages.forecasts import render
+    from pages.forecasts import render
     render()
 elif page == "About":
-    from dashboard.pages.about import render
+    from pages.about import render
     render()
