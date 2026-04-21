@@ -25,5 +25,17 @@ def get_engine():
         user     = os.getenv("DB_USER", "carbon_user")
         password = os.getenv("DB_PASSWORD", "carbon_pass")
 
-  url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{name}"
-  return create_engine(url, pool_pre_ping=True, connect_args={"sslmode": "require"})
+    url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{name}"
+    return create_engine(url, pool_pre_ping=True, connect_args={"sslmode": "require"})
+
+
+def test_connection():
+    engine = get_engine()
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT COUNT(*) FROM technology_categories"))
+        count = result.scalar()
+        print(f"✓ Connected. {count} technology categories loaded.")
+
+
+if __name__ == "__main__":
+    test_connection()
