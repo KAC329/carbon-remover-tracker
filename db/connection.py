@@ -26,4 +26,4 @@ def get_engine():
         password = os.getenv("DB_PASSWORD", "carbon_pass")
 
   url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{name}"
-return create_engine(url, pool_pre_ping=True, connect_args={"sslmode": "require"})
+  return create_engine(url, pool_pre_ping=True, connect_args={"sslmode": "require"})
