@@ -140,7 +140,7 @@ def render():
             Each bubble is one company. Its position on the horizontal axis shows its average
             <strong>ESG score</strong> (0 = worst, 1 = best) across 2018–2024. Its position on the
             vertical axis shows its average annual <strong>total CO₂ emissions</strong> in million tonnes.
-            The <strong>size</strong> of the bubble is proportional to emissions — bigger bubble means more emissions.
+            The <strong>size</strong> of the bubble represents average annual carbon offsets/credits purchased — bigger bubble means more carbon removal activity.
             <strong>Color</strong> indicates the company's role in the carbon removal ecosystem.
             <br><br>
             If ESG scores reflected real-world emissions, we'd expect a downward slope —
