@@ -126,9 +126,8 @@ def render():
         plot_bgcolor="white", paper_bgcolor="white",
         font=dict(family="DM Sans", size=12, color="#333"),
         xaxis=dict(title="Year", showgrid=False),
-        yaxis=dict(title="Cost (USD per tonne CO₂) — log scale",
-                   showgrid=True, gridcolor="#f0f0f0",
-                   type="log"),
+        yaxis=dict(title="Cost (USD per tonne CO₂)",
+           showgrid=True, gridcolor="#f0f0f0"),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
         margin=dict(l=70, r=40, t=60, b=60),
         hovermode="x unified"
