@@ -153,6 +153,45 @@ class DBLoader:
         print(f"✓ Loaded {rows_loaded} rows → carbon_credit_prices")
         return rows_loaded
 
+    def load_esg_company_data(self, df: pd.DataFrame) -> int:
+        rows_loaded = 0
+        with self.engine.begin() as conn:
+            for _, row in df.iterrows():
+                conn.execute(text("""
+                    INSERT INTO esg_company_data
+                        (ticker, company_name, year, esg_score, esg_combined_score,
+                         co2_total, co2_scope1, co2_scope2, co2_scope3,
+                         carbon_offsets, emission_reduction_target, emission_reduction_year)
+                    VALUES
+                        (:ticker, :company_name, :year, :esg_score, :esg_combined,
+                         :co2_total, :co2_scope1, :co2_scope2, :co2_scope3,
+                         :offsets, :reduction_target, :reduction_year)
+                    ON CONFLICT (ticker, year)
+                    DO UPDATE SET
+                        esg_score = EXCLUDED.esg_score,
+                        esg_combined_score = EXCLUDED.esg_combined_score,
+                        co2_total = EXCLUDED.co2_total,
+                        co2_scope1 = EXCLUDED.co2_scope1,
+                        co2_scope2 = EXCLUDED.co2_scope2,
+                        co2_scope3 = EXCLUDED.co2_scope3
+                """), {
+                    "ticker":           row["ticker"],
+                    "company_name":     row.get("company_name"),
+                    "year":             int(row["year"]),
+                    "esg_score":        float(row["esg_score"]) if pd.notna(row.get("esg_score")) else None,
+                    "esg_combined":     float(row["esg_combined_score"]) if pd.notna(row.get("esg_combined_score")) else None,
+                    "co2_total":        float(row["co2_total"]) if pd.notna(row.get("co2_total")) else None,
+                    "co2_scope1":       float(row["co2_scope1"]) if pd.notna(row.get("co2_scope1")) else None,
+                    "co2_scope2":       float(row["co2_scope2"]) if pd.notna(row.get("co2_scope2")) else None,
+                    "co2_scope3":       float(row["co2_scope3"]) if pd.notna(row.get("co2_scope3")) else None,
+                    "offsets":          float(row["carbon_offsets"]) if pd.notna(row.get("carbon_offsets")) else None,
+                    "reduction_target": float(row["emission_reduction_target"]) if pd.notna(row.get("emission_reduction_target")) else None,
+                    "reduction_year":   int(row["emission_reduction_year"]) if pd.notna(row.get("emission_reduction_year")) else None,
+                })
+                rows_loaded += 1
+        print(f"✓ Loaded {rows_loaded} rows → esg_company_data")
+        return rows_loaded
+
     def load_investment_flows(self, df: pd.DataFrame) -> int:
         rows_loaded = 0
         with self.engine.begin() as conn:

@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from pipeline.extractors.dac_costs import DACCostExtractor, DACDeploymentExtractor
 from pipeline.extractors.nature_based import UrbanForestryExtractor, ReforestationExtractor
 from pipeline.extractors.carbon_markets import CarbonCreditPriceExtractor, InvestmentFlowExtractor
+from pipeline.extractors.lseg_esg import LSEGESGExtractor
 from pipeline.loaders.db_loader import DBLoader
 
 
@@ -58,6 +59,12 @@ def run_nature(loader: DBLoader):
     )
 
 
+def run_esg(loader):
+    print("\n── LSEG ESG ─────────────────────────────────")
+    esg_df = LSEGESGExtractor().extract()
+    loader.load_esg_company_data(esg_df)
+
+
 def run_markets(loader: DBLoader):
     print("\n── Carbon Markets ───────────────────────────")
     prices_df = CarbonCreditPriceExtractor().extract()
@@ -71,7 +78,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run carbon removal ETL pipeline")
     parser.add_argument(
         "--extractors", nargs="+",
-        choices=["dac", "nature", "markets", "all"],
+        choices=["dac", "nature", "markets", "esg", "all"],
         default=["all"],
         help="Which extractors to run (default: all)"
     )
@@ -90,6 +97,8 @@ def main():
         run_nature(loader)
     if run_all or "markets" in args.extractors:
         run_markets(loader)
+    if run_all or "esg" in args.extractors:
+        run_esg(loader)
 
     print("\n✓ Pipeline complete.")
 
