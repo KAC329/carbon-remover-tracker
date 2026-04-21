@@ -17,6 +17,14 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono&display=swap');
 
+[data-testid="collapsedControl"] {
+    display: none !important;
+}
+section[data-testid="stSidebar"] {
+    min-width: 250px !important;
+    max-width: 250px !important;
+}
+
 /* Base */
 html, body, [class*="css"] {
     font-family: 'DM Sans', sans-serif;
