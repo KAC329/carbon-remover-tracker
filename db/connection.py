@@ -1,7 +1,7 @@
 """
 db/connection.py
 Centralized database connection using SQLAlchemy.
-All pipeline modules import get_engine() from here.
+Reads from Streamlit secrets when deployed, .env when local.
 """
 
 import os
@@ -11,23 +11,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_engine():
-    """Return a SQLAlchemy engine using environment variables."""
-    url = (
-        f"postgresql+psycopg2://"
-        f"{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
-        f"@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '5432')}"
-        f"/{os.getenv('DB_NAME')}"
-    )
+    try:
+        import streamlit as st
+        host     = st.secrets["DB_HOST"]
+        port     = st.secrets["DB_PORT"]
+        name     = st.secrets["DB_NAME"]
+        user     = st.secrets["DB_USER"]
+        password = st.secrets["DB_PASSWORD"]
+    except Exception:
+        host     = os.getenv("DB_HOST", "localhost")
+        port     = os.getenv("DB_PORT", "5432")
+        name     = os.getenv("DB_NAME", "carbon_removal_db")
+        user     = os.getenv("DB_USER", "carbon_user")
+        password = os.getenv("DB_PASSWORD", "carbon_pass")
+
+    url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{name}"
     return create_engine(url, pool_pre_ping=True)
-
-
-def test_connection():
-    engine = get_engine()
-    with engine.connect() as conn:
-        result = conn.execute(text("SELECT COUNT(*) FROM technology_categories"))
-        count = result.scalar()
-        print(f"✓ Connected. {count} technology categories loaded.")
-
-
-if __name__ == "__main__":
-    test_connection()
