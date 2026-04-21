@@ -19,6 +19,7 @@ from pipeline.extractors.dac_costs import DACCostExtractor, DACDeploymentExtract
 from pipeline.extractors.nature_based import UrbanForestryExtractor, ReforestationExtractor
 from pipeline.extractors.carbon_markets import CarbonCreditPriceExtractor, InvestmentFlowExtractor
 from pipeline.extractors.lseg_esg import LSEGESGExtractor
+from pipeline.extractors.lseg_commitments import LSEGCommitmentsExtractor
 from pipeline.loaders.db_loader import DBLoader
 
 
@@ -65,6 +66,13 @@ def run_esg(loader):
     loader.load_esg_company_data(esg_df)
 
 
+def run_commitments(loader):
+    print("\n── LSEG Commitments ─────────────────────────")
+    from pipeline.loaders.db_loader import DBLoader as _DBLoader
+    commitments_df = LSEGCommitmentsExtractor().extract()
+    loader.load_esg_commitments(commitments_df)
+
+
 def run_markets(loader: DBLoader):
     print("\n── Carbon Markets ───────────────────────────")
     prices_df = CarbonCreditPriceExtractor().extract()
@@ -78,7 +86,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run carbon removal ETL pipeline")
     parser.add_argument(
         "--extractors", nargs="+",
-        choices=["dac", "nature", "markets", "esg", "all"],
+        choices=["dac", "nature", "markets", "esg", "commitments", "all"],
         default=["all"],
         help="Which extractors to run (default: all)"
     )
@@ -99,6 +107,8 @@ def main():
         run_markets(loader)
     if run_all or "esg" in args.extractors:
         run_esg(loader)
+    if run_all or "commitments" in args.extractors:
+        run_commitments(loader)
 
     print("\n✓ Pipeline complete.")
 

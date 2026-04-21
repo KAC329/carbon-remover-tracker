@@ -88,6 +88,19 @@ def get_esg_data():
 
 
 @st.cache_data
+def get_esg_commitments():
+    engine = get_engine()
+    with engine.connect() as conn:
+        return pd.read_sql("""
+            SELECT ticker, year, carbon_offsets_t,
+                   reduction_target_pct, reduction_target_year,
+                   climate_risk_acknowledged, data_source
+            FROM esg_commitments
+            ORDER BY ticker, year
+        """, conn)
+
+
+@st.cache_data
 def get_carbon_prices():
     engine = get_engine()
     with engine.connect() as conn:

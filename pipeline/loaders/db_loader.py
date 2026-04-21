@@ -192,6 +192,37 @@ class DBLoader:
         print(f"✓ Loaded {rows_loaded} rows → esg_company_data")
         return rows_loaded
 
+    def load_esg_commitments(self, df) -> int:
+        rows_loaded = 0
+        with self.engine.begin() as conn:
+            for _, row in df.iterrows():
+                conn.execute(text("""
+                    INSERT INTO esg_commitments
+                        (ticker, company_name, year, carbon_offsets_t,
+                         reduction_target_pct, reduction_target_year,
+                         climate_risk_acknowledged, data_source)
+                    VALUES
+                        (:ticker, :company_name, :year, :offsets,
+                         :target_pct, :target_year, :climate_risk, :source)
+                    ON CONFLICT (ticker, year)
+                    DO UPDATE SET
+                        carbon_offsets_t = EXCLUDED.carbon_offsets_t,
+                        reduction_target_pct = EXCLUDED.reduction_target_pct,
+                        reduction_target_year = EXCLUDED.reduction_target_year
+                """), {
+                    "ticker":       row["ticker"],
+                    "company_name": row.get("company_name"),
+                    "year":         int(row["year"]),
+                    "offsets":      float(row["carbon_offsets_t"]) if pd.notna(row.get("carbon_offsets_t")) else None,
+                    "target_pct":   float(row["reduction_target_pct"]) if pd.notna(row.get("reduction_target_pct")) else None,
+                    "target_year":  int(row["reduction_target_year"]) if pd.notna(row.get("reduction_target_year")) else None,
+                    "climate_risk": bool(row["climate_risk_acknowledged"]) if pd.notna(row.get("climate_risk_acknowledged")) else None,
+                    "source":       row.get("data_source", "LSEG/WRDS"),
+                })
+                rows_loaded += 1
+        print(f"✓ Loaded {rows_loaded} rows → esg_commitments")
+        return rows_loaded
+
     def load_investment_flows(self, df: pd.DataFrame) -> int:
         rows_loaded = 0
         with self.engine.begin() as conn:

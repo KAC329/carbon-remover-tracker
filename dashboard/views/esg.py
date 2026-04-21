@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 import pandas as pd
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from dashboard.data import get_esg_data
+from dashboard.data import get_esg_data, get_esg_commitments
 
 
 COMPANY_ROLES = {
@@ -62,6 +62,11 @@ def render():
     df = get_esg_data()
     df["role"] = df["ticker"].map(COMPANY_ROLES)
     df["color"] = df["role"].map(COLORS)
+
+    # Get commitments data for bubble sizing
+    commitments = get_esg_commitments()
+    avg_offsets = commitments.groupby("ticker")["carbon_offsets_t"].mean().reset_index()
+    avg_offsets.columns = ["ticker", "avg_offsets_t"]
 
     # ── Glossary ──────────────────────────────────────────────────
     with st.expander("📖 Glossary — abbreviations and terms used on this page"):
@@ -150,6 +155,8 @@ def render():
         avg_co2=("co2_total", "mean"),
         company_name=("company_name", "first")
     ).reset_index()
+    summary = summary.merge(avg_offsets, on="ticker", how="left")
+    summary["avg_offsets_t"] = summary["avg_offsets_t"].fillna(0)
     summary["color"] = summary["role"].map(COLORS)
     summary["company_name"] = summary["company_name"].str.title()
 
@@ -166,7 +173,7 @@ def render():
             textposition="top center",
             textfont=dict(family="DM Mono", size=11, color="#333"),
             marker=dict(
-                size=sub["avg_co2"].apply(lambda x: max(12, min(60, x / 2e6 * 40))),
+                size=sub["avg_offsets_t"].apply(lambda x: max(10, min(60, (x / 5e6) * 50 + 10))),
                 color=COLORS[role],
                 opacity=0.85,
                 line=dict(width=1.5, color="white")
@@ -175,6 +182,7 @@ def render():
                 "<b>%{text}</b><br>"
                 "Avg ESG Score: %{x:.3f} (0=worst, 1=best)<br>"
                 "Avg Annual CO₂: %{y:.1f} million tonnes<br>"
+                "Avg Annual Carbon Offsets: " + sub["avg_offsets_t"].apply(lambda x: f"{x:,.0f} tonnes").iloc[0] + "<br>"
                 f"Role: {role}<extra></extra>"
             )
         ))
@@ -204,7 +212,7 @@ def render():
 
     st.markdown("""
     <p style='font-size:0.8rem; color:#777; font-style:italic; margin-bottom:0.3rem;'>
-    Bubble size = average annual CO₂ emissions (larger bubble = more emissions). Hover over any bubble for exact figures.
+    Bubble size = average annual carbon offsets/credits purchased (larger bubble = more carbon removal activity). Hover over any bubble for exact figures.
     </p>
     """, unsafe_allow_html=True)
 
