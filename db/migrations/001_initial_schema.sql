@@ -191,3 +191,21 @@ CREATE INDEX idx_credit_prices_tech_date     ON carbon_credit_prices(technology_
 CREATE INDEX idx_investment_tech_year        ON investment_flows(technology_id, year);
 CREATE INDEX idx_forecast_tech_model_year    ON forecast_results(technology_id, model_name, forecast_year);
 CREATE INDEX idx_co_benefits_tech_geo_year   ON co_benefits(technology_id, geography_id, year);
+
+CREATE TABLE esg_company_data (
+    id                          SERIAL PRIMARY KEY,
+    ticker                      VARCHAR(10) NOT NULL,
+    company_name                VARCHAR(200),
+    year                        INT NOT NULL,
+    esg_score                   NUMERIC(6,4),
+    esg_combined_score          NUMERIC(6,4),
+    co2_total                   NUMERIC(15,2),
+    co2_scope1                  NUMERIC(15,2),
+    co2_scope2                  NUMERIC(15,2),
+    co2_scope3                  NUMERIC(15,2),
+    carbon_offsets              NUMERIC(15,2),
+    emission_reduction_target   NUMERIC(6,2),
+    emission_reduction_year     INT,
+    created_at                  TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (ticker, year)
+);
